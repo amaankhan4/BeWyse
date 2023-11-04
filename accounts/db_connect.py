@@ -7,3 +7,5 @@ client = pymongo.MongoClient(uri)
 db = client['local']
 
 user_collec = db['registered_users']
+
+customTokens = db['id_tokens']

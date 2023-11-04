@@ -1,8 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.http import HttpResponse
-from .db_connect import user_collec
+from .db_connect import user_collec,customTokens
 import random,string,json
-import firebase_admin
+from .firebase_auth import create_custom_id,checkValidity
+
 
 def register(request):
     if request.method == 'POST':
@@ -54,12 +55,26 @@ def login(request):
     if request.method == "POST":
         username = request.POST.get('username')
         password = request.POST.get('password')
+        if user_collec.find_one({'username':username,'password':password}):
+            custom_token = create_custom_id(username)
+            return HttpResponse(custom_token)
+        else:
+            return HttpResponse('Username or password is invalid',status=404)
     return render(request,'accounts/login.html')
 
 
-
-def view(request):
-    return HttpResponse("Success",status=200)
+def view(request,username):
+    user_token = customTokens.find_one({'username':username},{'_id':0})
+    if user_token:
+        user_data = user_collec.find_one({'username':username},{"_id":0,"password":0})
+        fullName = user_data.get('first_name') + " " + user_data.get('last_name')
+        user_data['full_name'] = fullName
+        del user_data['last_name']
+        del user_data['first_name']
+        json_data = json.dumps(user_data)
+        return HttpResponse(json_data)
+    else:
+        return HttpResponse('UNAUTHORIZED',status=401)  
     
 def edit(request):
     return HttpResponse("Success",status=200)
