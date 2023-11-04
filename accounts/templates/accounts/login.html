@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+{% load static %}
+<head>
+    <title>User Login</title>
+</head>
+<body>
+    <link href="{% static 'accounts/main.css' %}"rel="stylesheet">
+    <div class="container">
+        <div class="centered">
+            <h2>User Login</h2>
+            <form method="POST" action="">
+                {% csrf_token %}
+                <label for="username">Username:</label><br>
+                <input type="username" id="username" name="username"><br><br>
+                <label for="password">Password:</label><br>
+                <input type="password" id="password" name="password"><br><br>
+                <input type="submit" value="Login">
+            </form>
+        </div>
+    </div>
+</body>
+</html>

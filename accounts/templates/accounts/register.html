@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+{% load static %}
+<head>
+    <title>User Registration</title>
+</head>
+<body>
+    <link href="{% static 'accounts/main.css' %}"rel="stylesheet">
+    <div class="container">
+        <div class="centered">
+            <h2>User Registration</h2>
+            <form method="POST" action="">
+                {% csrf_token %}
+                <label for="email">Email:</label><br>
+                <input type="email" id="email" name="email"><br><br>
+                <label for="password">Password:</label><br>
+                <input type="password" id="password" name="password"><br><br>
+                <label for="first_name">First Name:</label><br>
+                <input type="text" id="first_name" name="first_name"><br><br>
+                <label for="last_name">Last Name:</label><br>
+                <input type="text" id="last_name" name="last_name"><br><br>
+                <input type="submit" value="Register">
+            </form>
+        </div>
+    </div>
+</body>
+</html>
