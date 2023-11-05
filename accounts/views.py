@@ -1,8 +1,8 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render
 from django.http import HttpResponse
 from .db_connect import user_collec,customTokens
 import random,string,json
-from .firebase_auth import create_custom_id,checkValidity
+from .firebase_auth import create_custom_id
 
 
 def register(request):
@@ -76,5 +76,28 @@ def view(request,username):
     else:
         return HttpResponse('UNAUTHORIZED',status=401)  
     
-def edit(request):
-    return HttpResponse("Success",status=200)
+def edit(request,username):
+    user_token = customTokens.find_one({'username':username},{'_id':0})
+    if user_token:
+        email =  user_collec.find_one({'username':username},{'email':1,'_id':0}).get('email')
+        password =  user_collec.find_one({'username':username},{'password':1,'_id':0}).get('password')
+        first_name = user_collec.find_one({'username':username},{'first_name':1,'_id':0}).get('first_name')
+        last_name = user_collec.find_one({'username':username},{'last_name':1,'_id':0}).get('last_name')
+        if request.method == "POST":
+            updated_fn = request.POST.get('first_name')
+            updated_ln = request.POST.get('last_name')
+            updated_un = request.POST.get('username')
+            if updated_fn == first_name and updated_ln == last_name and updated_un == username:
+                return HttpResponse('',status=200)
+            elif user_collec.find_one({'username':updated_un}) and updated_un != username:
+                return HttpResponse(f"User already exist with the username ${updated_un}")
+            else:
+                user_collec.find_one_and_replace({'username':username},{'username':updated_un,'last_name':updated_ln,'first_name':updated_fn,'email':email,'passowrd':password})
+            json_data = json.dumps({'username':updated_un,'email':email,'full_name':(updated_fn+" "+updated_ln)})
+
+            return HttpResponse(json_data)
+
+    else:
+        return HttpResponse('UNAUTHORIZED',status=401)
+
+    return render(request,'accounts/profile_edit.html',{'username':username,'first_name':first_name,'last_name':last_name})

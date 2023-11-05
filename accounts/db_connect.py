@@ -8,4 +8,4 @@ db = client['local']
 
 user_collec = db['registered_users']
 
-customTokens = db['id_tokens']
+customTokens = db['custom_tokens']
